@@ -159,7 +159,6 @@ help:
 	@echo "Examples:"
 	@echo "  EXECUTABLE=./my_program make test"
 	@echo "  EXECUTABLE=python3 my_script.py make test"
-	@echo "  EXECUTABLE=java MyClass make test"
 
 # Phony targets
 .PHONY: test test-verbose test-single check-executable check-comparator help

@@ -1,23 +1,54 @@
-Test Makefile - Shared testing system
+# ЭВМ
 
-Usage:
-  EXECUTABLE=./your_program make test          # Run all tests (show only failures)
-  EXECUTABLE=./your_program make test-verbose  # Run all tests (show all)
-  EXECUTABLE=./your_program make test-single TEST=tests/test_name  # Run single test
+## Способ использования:
 
-Environment Variables:
-  EXECUTABLE - Path to the executable to test (default: ./main)
-  COMPARATOR - Path to the comparator script (default: python3 compare.py)
+bash
+EXECUTABLE=./ваша_программа make test          # Запустить все тесты (показывать только упавшие)
+EXECUTABLE=./ваша_программа make test-verbose  # Запустить все тесты (показывать все результаты)
+EXECUTABLE=./ваша_программа make test-single TEST=tests/имя_теста  # Запустить один конкретный тест
+Переменные окружения:
 
-Files Required:
-  compare.py - Output comparison script (must be in current directory)
+EXECUTABLE — Путь к исполняемому файлу для тестирования (по умолчанию: ./main)
 
-Test Structure:
-  Each test should be in tests/<test_name>/ with:
-    - in.txt  (input)
-    - out.txt (expected output)
+COMPARATOR — Путь к скрипту для сравнения выводов (по умолчанию: python3 compare.py)
 
-Examples:
-  EXECUTABLE=./my_program make test
-  EXECUTABLE=python3 my_script.py make test
-  EXECUTABLE=java MyClass make test
+Необходимые файлы:
+
+compare.py — Скрипт для сравнения выходных данных (должен находиться в текущей директории)
+
+## Структура теста:
+Каждый тест должен располагаться в папке tests/<имя_теста>/ и содержать:
+
+in.txt (входные данные)
+
+out.txt (ожидаемые выходные данные)
+
+## Примеры:
+
+bash
+EXECUTABLE=./my_program make test
+EXECUTABLE=python3 my_script.py make test
+
+## Что делать если хотите добавить свой тесты
+1. Создайте новую ветку
+```bash
+git checkout -b branch_name
+```
+2. Создайте новую папку внутри папки tests/ с именем теста. Внутри нее сделайте 2 файл: in.txt и out.txt, ввод и ожидаемый вывод соответственно
+Чтобы не было коллизий названий тестов предлагаю следующую систему именования: `операция_тип-округления_автор-теста_номер-добавляемого-теста`
+Пример: `mult_0_dandolmatov_1`
+3. Запуште все изменения, создайте пул реквест и отметьте кого-нибудь из создателей репозитория в качестве ревьюера.
+**Самому мержить ПР нельзя, надо чтобы кто-нибудь провалидировал тест**
+
+*Также предложение: давайте не плодить много простых тестов, создавайте какие-нибудь тесты, где решает тип округления, а не просто 2+2*
+
+## Немного рекомендаций по запуску
+Ввод данных в оригинальной задаче осуществляется через командную строку. Здесь для простоты ввод осуществляется с помощью stdin
+Поэтому перед запуском тестов учтите это. Рекомендую при сборке добавлять флаг `-DLOCAL`, и в зависимости от этого флага менять считывание внутри программы:
+```cpp
+#ifdef LOCAL
+// Считываем из stdin
+#else
+// Считываем аргументы консоли
+#endif
+```
