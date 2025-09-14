@@ -4,6 +4,9 @@
 # Test executable (can be overridden with EXECUTABLE env var)
 EXECUTABLE ?= ./main
 
+# Comparator script
+COMPARATOR ?= python3 compare.py
+
 # Check if executable exists
 check-executable:
 	@if [ ! -f "$(EXECUTABLE)" ] && [ ! -f "$$(echo $(EXECUTABLE) | sed 's|^\./||')" ]; then \
@@ -13,8 +16,20 @@ check-executable:
 		exit 1; \
 	fi
 
+# Check if comparator exists
+check-comparator:
+	@if ! command -v python3 >/dev/null 2>&1; then \
+		echo "Error: python3 not found! Please install Python 3."; \
+		exit 1; \
+	fi
+	@if [ ! -f "compare.py" ]; then \
+		echo "Error: compare.py not found!"; \
+		echo "Please ensure compare.py is in the current directory."; \
+		exit 1; \
+	fi
+
 # Run all tests (only shows failed tests)
-test: check-executable
+test: check-executable check-comparator
 	@echo "Running all tests..."
 	@test_count=0; \
 	passed_count=0; \
@@ -24,8 +39,7 @@ test: check-executable
 			test_name=$$(basename "$$test_dir"); \
 			test_count=$$((test_count + 1)); \
 			actual_output=$$($(EXECUTABLE) < "$$test_dir"in.txt); \
-			expected_output=$$(cat "$$test_dir"out.txt); \
-			if [ "$$actual_output" = "$$expected_output" ]; then \
+			if $(COMPARATOR) "$$test_dir"out.txt "$$actual_output" >/dev/null 2>&1; then \
 				passed_count=$$((passed_count + 1)); \
 			else \
 				echo "Running test: $$test_name"; \
@@ -42,7 +56,7 @@ test: check-executable
 	echo "Test Summary: $$passed_count/$$test_count passed, $$failed_count failed"
 
 # Run all tests (verbose version - shows all tests)
-test-verbose: check-executable
+test-verbose: check-executable check-comparator
 	@echo "Running all tests with verbose output..."
 	@test_count=0; \
 	passed_count=0; \
@@ -59,13 +73,12 @@ test-verbose: check-executable
 			echo "Actual output:"; \
 			actual_output=$$($(EXECUTABLE) < "$$test_dir"in.txt); \
 			echo "$$actual_output"; \
-			expected_output=$$(cat "$$test_dir"out.txt); \
-			if [ "$$actual_output" = "$$expected_output" ]; then \
+			if $(COMPARATOR) "$$test_dir"out.txt "$$actual_output" >/dev/null 2>&1; then \
 				echo "✓ PASSED"; \
 				passed_count=$$((passed_count + 1)); \
 			else \
 				echo "✗ FAILED"; \
-				echo "Expected: '$$expected_output'"; \
+				echo "Expected: '$$(cat "$$test_dir"out.txt)'"; \
 				echo "Got: '$$actual_output'"; \
 				failed_count=$$((failed_count + 1)); \
 			fi; \
@@ -76,7 +89,7 @@ test-verbose: check-executable
 	echo "Test Summary: $$passed_count/$$test_count passed, $$failed_count failed"
 
 # Run specific test (usage: make test-single TEST=tests/mult_0_1)
-test-single: check-executable
+test-single: check-executable check-comparator
 	@if [ -z "$(TEST)" ]; then \
 		echo "Usage: make test-single TEST=<test_directory_name>"; \
 		echo "Example: make test-single TEST=tests/mult_0_1"; \
@@ -113,12 +126,11 @@ test-single: check-executable
 	echo "Actual output:"; \
 	actual_output=$$($(EXECUTABLE) < "$(TEST)/in.txt"); \
 	echo "$$actual_output"; \
-	expected_output=$$(cat "$(TEST)/out.txt"); \
-	if [ "$$actual_output" = "$$expected_output" ]; then \
+	if $(COMPARATOR) "$(TEST)/out.txt" "$$actual_output" >/dev/null 2>&1; then \
 		echo "✓ PASSED"; \
 	else \
 		echo "✗ FAILED"; \
-		echo "Expected: '$$expected_output'"; \
+		echo "Expected: '$$(cat "$(TEST)/out.txt")'"; \
 		echo "Got: '$$actual_output'"; \
 	fi; \
 	echo "=========================================="
@@ -134,6 +146,10 @@ help:
 	@echo ""
 	@echo "Environment Variables:"
 	@echo "  EXECUTABLE - Path to the executable to test (default: ./main)"
+	@echo "  COMPARATOR - Path to the comparator script (default: python3 compare.py)"
+	@echo ""
+	@echo "Files Required:"
+	@echo "  compare.py - Output comparison script (must be in current directory)"
 	@echo ""
 	@echo "Test Structure:"
 	@echo "  Each test should be in tests/<test_name>/ with:"
@@ -146,4 +162,4 @@ help:
 	@echo "  EXECUTABLE=java MyClass make test"
 
 # Phony targets
-.PHONY: test test-verbose test-single check-executable help
+.PHONY: test test-verbose test-single check-executable check-comparator help
