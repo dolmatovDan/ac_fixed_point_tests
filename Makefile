@@ -18,7 +18,7 @@ check-executable:
 
 # Check if comparator exists
 check-comparator:
-	@if ! command -v python3 >/dev/null 2>&1; then \
+	@if ! command -v python3; then \
 		echo "Error: python3 not found! Please install Python 3."; \
 		exit 1; \
 	fi
@@ -39,7 +39,7 @@ test: check-executable check-comparator
 			test_name=$$(basename "$$test_dir"); \
 			test_count=$$((test_count + 1)); \
 			actual_output=$$($(EXECUTABLE) < "$$test_dir"in.txt); \
-			if $(COMPARATOR) "$$test_dir"out.txt "$$actual_output" >/dev/null 2>&1; then \
+			if $(COMPARATOR) "$$test_dir"out.txt "$$actual_output"; then \
 				passed_count=$$((passed_count + 1)); \
 			else \
 				echo "Running test: $$test_name"; \
@@ -73,7 +73,7 @@ test-verbose: check-executable check-comparator
 			echo "Actual output:"; \
 			actual_output=$$($(EXECUTABLE) < "$$test_dir"in.txt); \
 			echo "$$actual_output"; \
-			if $(COMPARATOR) "$$test_dir"out.txt "$$actual_output" >/dev/null 2>&1; then \
+			if $(COMPARATOR) "$$test_dir"out.txt "$$actual_output"; then \
 				echo "✓ PASSED"; \
 				passed_count=$$((passed_count + 1)); \
 			else \
@@ -126,7 +126,7 @@ test-single: check-executable check-comparator
 	echo "Actual output:"; \
 	actual_output=$$($(EXECUTABLE) < "$(TEST)/in.txt"); \
 	echo "$$actual_output"; \
-	if $(COMPARATOR) "$(TEST)/out.txt" "$$actual_output" >/dev/null 2>&1; then \
+	if $(COMPARATOR) "$(TEST)/out.txt" "$$actual_output"; then \
 		echo "✓ PASSED"; \
 	else \
 		echo "✗ FAILED"; \

@@ -40,8 +40,6 @@ def compare_outputs(expected_file, actual_output):
 def main():
     """Main function for command line usage."""
     if len(sys.argv) != 3:
-        print("Usage: python3 compare.py <expected_file> <actual_output>", file=sys.stderr)
-        print("Example: python3 compare.py tests/test1/out.txt 'actual output'", file=sys.stderr)
         sys.exit(2)
     
     expected_file = sys.argv[1]
