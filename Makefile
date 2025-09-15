@@ -42,7 +42,7 @@ test: check-executable check-comparator
 				if [ -d "$$test_dir" ]; then \
 					test_name=$$(basename "$$test_dir"); \
 					test_count=$$((test_count + 1)); \
-					actual_output=$$($(EXECUTABLE) < "$$test_dir/in.txt"); \
+					actual_output=$$(cat "$$test_dir"in.txt | xargs ./$(EXECUTABLE)); \
 					if $(COMPARATOR) "$$test_dir/out.txt" "$$actual_output"; then \
 						passed_count=$$((passed_count + 1)); \
 					else \
@@ -83,7 +83,7 @@ test-verbose: check-executable check-comparator
 					echo "Input: $$(cat "$$test_dir/in.txt")"; \
 					echo "Expected output: $$(cat "$$test_dir/out.txt")"; \
 					echo "Actual output:"; \
-					actual_output=$$($(EXECUTABLE) < "$$test_dir/in.txt"); \
+					actual_output=$$(cat "$$test_dir"in.txt | xargs ./$(EXECUTABLE)); \
 					echo "$$actual_output"; \
 					if $(COMPARATOR) "$$test_dir/out.txt" "$$actual_output"; then \
 						echo "✓ PASSED"; \
@@ -152,7 +152,7 @@ test-single: check-executable check-comparator
 	echo "Input: $$(cat "tests/$(TEST)/in.txt")"; \
 	echo "Expected output: $$(cat "tests/$(TEST)/out.txt")"; \
 	echo "Actual output:"; \
-	actual_output=$$($(EXECUTABLE) < "tests/$(TEST)/in.txt"); \
+	actual_output=$$(cat "$$test_dir"in.txt | xargs ./$(EXECUTABLE)); \
 	echo "$$actual_output"; \
 	if $(COMPARATOR) "tests/$(TEST)/out.txt" "$$actual_output"; then \
 		echo "✓ PASSED"; \
