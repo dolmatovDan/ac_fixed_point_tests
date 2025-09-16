@@ -29,7 +29,7 @@ check-comparator:
 	fi
 
 # Run all tests (only shows failed tests)
-test: check-executable check-comparator
+test:
 	@echo "Running all tests..."
 	@test_count=0; \
 	passed_count=0; \
@@ -62,7 +62,7 @@ test: check-executable check-comparator
 	echo "Test Summary: $$passed_count/$$test_count passed, $$failed_count failed"
 
 # Run all tests (verbose version - shows all tests)
-test-verbose: check-executable check-comparator
+test-verbose:
 	@echo "Running all tests with verbose output..."
 	@test_count=0; \
 	passed_count=0; \
@@ -103,10 +103,10 @@ test-verbose: check-executable check-comparator
 	echo "Test Summary: $$passed_count/$$test_count passed, $$failed_count failed"
 
 # Run specific test (usage: make test-single TEST=tests/dandolmatov/mult_0_1)
-test-single: check-executable check-comparator
+test-single:
 	@if [ -z "$(TEST)" ]; then \
-		echo "Usage: make test-single TEST=<user>/<test_name>"; \
-		echo "Example: make test-single TEST=dandolmatov/mult_0_1"; \
+		echo "Usage: make test-single TEST=tests/<user>/<test_name>"; \
+		echo "Example: make test-single TEST=tests/dandolmatov/mult_0_1"; \
 		echo "Available tests:"; \
 		for user_dir in tests/*/; do \
 			if [ -d "$$user_dir" ]; then \
@@ -122,8 +122,8 @@ test-single: check-executable check-comparator
 		done; \
 		exit 1; \
 	fi
-	@if [ ! -d "tests/$(TEST)" ]; then \
-		echo "Test directory tests/$(TEST) not found!"; \
+	@if [ ! -d "$(TEST)" ]; then \
+		echo "Test directory $(TEST) not found!"; \
 		echo "Available tests:"; \
 		for user_dir in tests/*/; do \
 			if [ -d "$$user_dir" ]; then \
@@ -139,26 +139,26 @@ test-single: check-executable check-comparator
 		done; \
 		exit 1; \
 	fi
-	@if [ ! -f "tests/$(TEST)/in.txt" ]; then \
-		echo "Input file tests/$(TEST)/in.txt not found!"; \
+	@if [ ! -f "$(TEST)/in.txt" ]; then \
+		echo "Input file $(TEST)/in.txt not found!"; \
 		exit 1; \
 	fi
-	@if [ ! -f "tests/$(TEST)/out.txt" ]; then \
-		echo "Expected output file tests/$(TEST)/out.txt not found!"; \
+	@if [ ! -f "$(TEST)/out.txt" ]; then \
+		echo "Expected output file $(TEST)/out.txt not found!"; \
 		exit 1; \
 	fi
 	@echo "=========================================="; \
-	echo "Test directory: tests/$(TEST)"; \
-	echo "Input: $$(cat "tests/$(TEST)/in.txt")"; \
-	echo "Expected output: $$(cat "tests/$(TEST)/out.txt")"; \
+	echo "Test directory: $(TEST)"; \
+	echo "Input: $$(cat "$(TEST)/in.txt")"; \
+	echo "Expected output: $$(cat "$(TEST)/out.txt")"; \
 	echo "Actual output:"; \
-	actual_output=$$(cat "tests/$(TEST)/in.txt" | xargs $(EXECUTABLE)); \
+	actual_output=$$(cat "$(TEST)/in.txt" | xargs $(EXECUTABLE)); \
 	echo "$$actual_output"; \
-	if $(COMPARATOR) "tests/$(TEST)/out.txt" "$$actual_output"; then \
+	if $(COMPARATOR) "$(TEST)/out.txt" "$$actual_output"; then \
 		echo "✓ PASSED"; \
 	else \
 		echo "✗ FAILED"; \
-		echo "Expected: '$$(cat "tests/$(TEST)/out.txt")'"; \
+		echo "Expected: '$$(cat "$(TEST)/out.txt")'"; \
 		echo "Got: '$$actual_output'"; \
 	fi; \
 	echo "=========================================="
@@ -168,9 +168,9 @@ help:
 	@echo "Test Makefile - Shared testing system"
 	@echo ""
 	@echo "Usage:"
-	@echo "  EXECUTABLE=./your_program make test          # Run all tests (show only failures)"
-	@echo "  EXECUTABLE=./your_program make test-verbose  # Run all tests (show all)"
-	@echo "  EXECUTABLE=./your_program make test-single TEST=user/test_name  # Run single test"
+	@echo "  EXECUTABLE=./your_program make test                                   # Run all tests (show only failures)"
+	@echo "  EXECUTABLE=./your_program make test-verbose                           # Run all tests (show all)"
+	@echo "  EXECUTABLE=./your_program make test-single TEST=tests/user/test_name  # Run single test"
 	@echo ""
 	@echo "Environment Variables:"
 	@echo "  EXECUTABLE - Path to the executable to test (default: ./main)"
