@@ -7,27 +7,6 @@ EXECUTABLE ?= ./main
 # Comparator script
 COMPARATOR ?= python3 compare.py
 
-# Check if executable exists
-check-executable:
-	@if [ ! -f "$(EXECUTABLE)" ] && [ ! -f "$$(echo $(EXECUTABLE) | sed 's|^\./||')" ]; then \
-		echo "Error: Executable '$(EXECUTABLE)' not found!"; \
-		echo "Please set EXECUTABLE environment variable or ensure the executable exists."; \
-		echo "Usage: EXECUTABLE=./your_program make test"; \
-		exit 1; \
-	fi
-
-# Check if comparator exists
-check-comparator:
-	@if ! command -v python3; then \
-		echo "Error: python3 not found! Please install Python 3."; \
-		exit 1; \
-	fi
-	@if [ ! -f "compare.py" ]; then \
-		echo "Error: compare.py not found!"; \
-		echo "Please ensure compare.py is in the current directory."; \
-		exit 1; \
-	fi
-
 # Run all tests (only shows failed tests)
 test:
 	@echo "Running all tests..."
