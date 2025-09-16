@@ -152,7 +152,7 @@ test-single: check-executable check-comparator
 	echo "Input: $$(cat "tests/$(TEST)/in.txt")"; \
 	echo "Expected output: $$(cat "tests/$(TEST)/out.txt")"; \
 	echo "Actual output:"; \
-	actual_output=$$(cat "$$test_dir"in.txt | xargs $(EXECUTABLE)); \
+	actual_output=$$(cat "tests/$(TEST)/in.txt" | xargs $(EXECUTABLE)); \
 	echo "$$actual_output"; \
 	if $(COMPARATOR) "tests/$(TEST)/out.txt" "$$actual_output"; then \
 		echo "✓ PASSED"; \
