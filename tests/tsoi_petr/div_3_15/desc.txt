@@ -1,0 +1,3 @@
+Numbers in bin format: 000000.1100 100111.0100
+Actual numbers: 0.750 -24.750
+Answer: -0.063
