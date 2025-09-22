@@ -1,0 +1,3 @@
+Numbers in bin format: 0001110111001.11100 0110101000110.00001
+Actual numbers: 953.875 3398.032
+Answer: -2444.156
